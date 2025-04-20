@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Participação - Churrasco e Torneio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .total-row {
+            font-weight: bold;
+            background-color: #e6e6e6;
+        }
+        .nome-col {
+            text-align: left;
+        }
+        .check {
+            text-align: center;
+            width: 100px;
+        }
+        h1 {
+            color: #333;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        button {
+            padding: 8px 12px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        #nomeJogador {
+            padding: 8px;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Controle de Participação - Churrasco e Torneio</h1>
+    
+    <div class="controls">
+        <input type="text" id="nomeJogador" placeholder="Nome do jogador">
+        <button onclick="adicionarJogador()">Adicionar Jogador</button>
+        <button onclick="calcularTotais()">Calcular Totais</button>
+    </div>
+    
+    <table id="tabelaJogadores">
+        <thead>
+            <tr>
+                <th width="50%">Nome do Jogador</th>
+                <th class="check">Churrasco</th>
+                <th class="check">Torneio</th>
+                <th class="check">Total Individual</th>
+                <th class="check">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Jogadores serão inseridos aqui -->
+        </tbody>
+        <tfoot>
+            <tr class="total-row">
+                <td class="nome-col">TOTAL</td>
+                <td id="totalChurrasco">0</td>
+                <td id="totalTorneio">0</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <script>
+        function adicionarJogador() {
+            const nome = document.getElementById('nomeJogador').value.trim();
+            if (!nome) {
+                alert('Por favor, insira um nome para o jogador.');
+                return;
+            }
+            
+            const tabela = document.getElementById('tabelaJogadores').getElementsByTagName('tbody')[0];
+            const novaLinha = tabela.insertRow();
+            
+            // Célula para nome
+            const celulaNome = novaLinha.insertCell(0);
+            celulaNome.className = 'nome-col';
+            celulaNome.textContent = nome;
+            
+            // Célula para churrasco
+            const celulaChurrasco = novaLinha.insertCell(1);
+            const checkChurrasco = document.createElement('input');
+            checkChurrasco.type = 'checkbox';
+            checkChurrasco.className = 'check-churrasco';
+            checkChurrasco.addEventListener('change', calcularTotais);
+            celulaChurrasco.appendChild(checkChurrasco);
+            
+            // Célula para torneio
+            const celulaTorneio = novaLinha.insertCell(2);
+            const checkTorneio = document.createElement('input');
+            checkTorneio.type = 'checkbox';
+            checkTorneio.className = 'check-torneio';
+            checkTorneio.addEventListener('change', calcularTotais);
+            celulaTorneio.appendChild(checkTorneio);
+            
+            // Célula para total individual
+            const celulaTotal = novaLinha.insertCell(3);
+            celulaTotal.className = 'total-individual';
+            celulaTotal.textContent = '0';
+            
+            // Célula para botão remover
+            const celulaRemover = novaLinha.insertCell(4);
+            const botaoRemover = document.createElement('button');
+            botaoRemover.textContent = 'Remover';
+            botaoRemover.onclick = function() {
+                tabela.removeChild(novaLinha);
+                calcularTotais();
+            };
+            celulaRemover.appendChild(botaoRemover);
+            
+            // Limpar campo de entrada
+            document.getElementById('nomeJogador').value = '';
+            
+            calcularTotais();
+        }
+        
+        function calcularTotais() {
+            const tabela = document.getElementById('tabelaJogadores');
+            const linhas = tabela.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            
+            let totalChurrasco = 0;
+            let totalTorneio = 0;
+            
+            for (let i = 0; i < linhas.length; i++) {
+                const checkChurrasco = linhas[i].getElementsByClassName('check-churrasco')[0].checked;
+                const checkTorneio = linhas[i].getElementsByClassName('check-torneio')[0].checked;
+                
+                let totalIndividual = 0;
+                if (checkChurrasco) {
+                    totalChurrasco++;
+                    totalIndividual++;
+                }
+                
+                if (checkTorneio) {
+                    totalTorneio++;
+                    totalIndividual++;
+                }
+                
+                linhas[i].getElementsByClassName('total-individual')[0].textContent = totalIndividual;
+            }
+            
+            document.getElementById('totalChurrasco').textContent = totalChurrasco;
+            document.getElementById('totalTorneio').textContent = totalTorneio;
+        }
+        
+        // Adicionar alguns jogadores de exemplo
+        window.onload = function() {
+            const jogadoresExemplo = ['Carlos Silva', 'João Oliveira', 'Ricardo Souza'];
+            
+            jogadoresExemplo.forEach(nome => {
+                document.getElementById('nomeJogador').value = nome;
+                adicionarJogador();
+            });
+        };
+    </script>
+</body>
+</html>
